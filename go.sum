@@ -1,0 +1,5 @@
+github.com/EcoPowerHub/context v0.1.1 h1:8CEV7Dh8KUvVTr9kB19nE0ew82YXONJ7JkeUTMd77XU=
+github.com/EcoPowerHub/context v0.1.1/go.mod h1:kWHAFBA22+BtGMSRUMBCe7QJsybLM+F0WOuYId6CKYQ=
+github.com/EcoPowerHub/shared v0.1.0 h1:rtz0IUgOQL35kIuzfprXtZcUTbTpXHpv9H2niMK4Qqk=
+github.com/EcoPowerHub/shared v0.1.0/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
+github.com/goburrow/serial v0.1.0/go.mod h1:sAiqG0nRVswsm1C97xsttiYCzSLBmUZ/VSlVLZJ8haA=
