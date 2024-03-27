@@ -10,7 +10,7 @@ type object struct {
 	Source int    `json:"source"`
 }
 type conf struct {
-	Host    string `json:"host"`
-	Period  string `json:"period"`
-	Site_id int    `json:"site_id"`
+	Host   string `json:"host"`
+	Period string `json:"period"`
+	Site   int    `json:"site_id"`
 }
