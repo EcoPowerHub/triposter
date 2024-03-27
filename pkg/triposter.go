@@ -60,22 +60,56 @@ func (t *Triposter) Configure() error {
 func (t *Triposter) Start() {
 	for {
 		t.Add()
-		t.Post(t.batteryWaitToPost, BatteryUrl)
-		t.Post(t.metricWaitToPost, MetricUrl)
-		t.Post(t.statusWaitToPost, StatusUrl)
-		t.Post(t.setpointWaitToPost, SetpointUrl)
-		t.Post(t.pvWaitToPost, PvUrl)
+		if len(t.batteryWaitToPost) == 0 {
+			t.logger.Debug().Msg("no data to send")
+			continue
+		} else {
+			t.logger.Debug().Msg("sending data")
+			t.Post(t.batteryWaitToPost, BatteryUrl)
+		}
+
+		if len(t.metricWaitToPost) == 0 {
+			t.logger.Debug().Msg("no data to send")
+			continue
+		} else {
+			t.logger.Debug().Msg("sending data")
+			t.Post(t.metricWaitToPost, MetricUrl)
+		}
+
+		if len(t.statusWaitToPost) == 0 {
+			t.logger.Debug().Msg("no data to send")
+			continue
+		} else {
+			t.logger.Debug().Msg("sending data")
+			t.Post(t.statusWaitToPost, StatusUrl)
+		}
+
+		if len(t.setpointWaitToPost) == 0 {
+			t.logger.Debug().Msg("no data to send")
+			continue
+		} else {
+			t.logger.Debug().Msg("sending data")
+			t.Post(t.setpointWaitToPost, SetpointUrl)
+		}
+
+		if len(t.pvWaitToPost) == 0 {
+			t.logger.Debug().Msg("no data to send")
+			continue
+		} else {
+			t.logger.Debug().Msg("sending data")
+			t.Post(t.pvWaitToPost, PvUrl)
+		}
+
 		t.ResetLists()
 		time.Sleep(t.period)
 	}
 }
 
 func (t *Triposter) Post(objectToPost any, url string) {
-
 	data := struct {
-		Objects any `json:"objects"`
+		Objects []*objects.Battery `json:"objects"`
 	}{
-		Objects: objectToPost,
+		Objects: objectToPost.([]*objects.Battery),
 	}
 	// Encodage des données en JSON
 	objectJson, err := json.Marshal(data)
@@ -120,6 +154,7 @@ func (t *Triposter) Add() {
 			}
 			battery.Source = object.Source
 			battery.Site = t.conf.Conf.Site
+			battery.Name = object.Name
 			t.batteryWaitToPost = append(t.batteryWaitToPost, battery)
 
 		case io.KeyMetric:
@@ -133,6 +168,7 @@ func (t *Triposter) Add() {
 			}
 			metric.Source = object.Source
 			metric.Site = t.conf.Conf.Site
+			metric.Name = object.Name
 			t.metricWaitToPost = append(t.metricWaitToPost, metric)
 
 		case io.KeyStatus:
@@ -146,6 +182,7 @@ func (t *Triposter) Add() {
 			}
 			status.Source = object.Source
 			status.Site = t.conf.Conf.Site
+			status.Name = object.Name
 			t.statusWaitToPost = append(t.statusWaitToPost, status)
 
 		case io.KeySetpoint:
@@ -159,6 +196,7 @@ func (t *Triposter) Add() {
 			}
 			setPoint.Source = object.Source
 			setPoint.Site = t.conf.Conf.Site
+			setPoint.Name = object.Name
 			t.setpointWaitToPost = append(t.setpointWaitToPost, setPoint)
 
 		case io.KeyPV:
@@ -172,6 +210,7 @@ func (t *Triposter) Add() {
 			}
 			pv.Source = object.Source
 			pv.Site = t.conf.Conf.Site
+			pv.Name = object.Name
 			t.pvWaitToPost = append(t.pvWaitToPost, pv)
 		}
 	}

@@ -12,6 +12,8 @@ github.com/EcoPowerHub/shared v0.1.6-0.20240327135839-d0e49f02a982 h1:4wQ6M+HWIU
 github.com/EcoPowerHub/shared v0.1.6-0.20240327135839-d0e49f02a982/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
 github.com/EcoPowerHub/shared v0.1.6-0.20240327141719-d5badf2fb429 h1:3Be3xR9cMGpIQxf8PeFKZnVh8Cza91az2AJYyA1DlBk=
 github.com/EcoPowerHub/shared v0.1.6-0.20240327141719-d5badf2fb429/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
+github.com/EcoPowerHub/shared v0.1.6-0.20240327144424-04fcf0f1a2bc h1:lWsWrLZ0eDh85NV9KTpWozQW6qnpryvcne0rLuTO7xY=
+github.com/EcoPowerHub/shared v0.1.6-0.20240327144424-04fcf0f1a2bc/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/goburrow/serial v0.1.0/go.mod h1:sAiqG0nRVswsm1C97xsttiYCzSLBmUZ/VSlVLZJ8haA=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
