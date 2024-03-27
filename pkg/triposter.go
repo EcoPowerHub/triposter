@@ -36,7 +36,7 @@ type Triposter struct {
 }
 
 func New(configuration Configuration, c *context.Context, log zerolog.Logger) Triposter {
-	return Triposter{conf: configuration, context: c}
+	return Triposter{conf: configuration, context: c, logger: &log}
 }
 
 func (t *Triposter) Configure() error {
