@@ -61,42 +61,42 @@ func (t *Triposter) Start() {
 	for {
 		t.Add()
 		if len(t.batteryWaitToPost) == 0 {
-			t.logger.Debug().Msg("no data to send")
+			t.logger.Debug().Msg("no battery data to send")
 			continue
 		} else {
-			t.logger.Debug().Msg("sending data")
+			t.logger.Debug().Msg("sending battery data")
 			t.Post(t.batteryWaitToPost, BatteryUrl)
 		}
 
 		if len(t.metricWaitToPost) == 0 {
-			t.logger.Debug().Msg("no data to send")
+			t.logger.Debug().Msg("no metric data to send")
 			continue
 		} else {
-			t.logger.Debug().Msg("sending data")
+			t.logger.Debug().Msg("sending metric data")
 			t.Post(t.metricWaitToPost, MetricUrl)
 		}
 
 		if len(t.statusWaitToPost) == 0 {
-			t.logger.Debug().Msg("no data to send")
+			t.logger.Debug().Msg("no status data to send")
 			continue
 		} else {
-			t.logger.Debug().Msg("sending data")
+			t.logger.Debug().Msg("sending status data")
 			t.Post(t.statusWaitToPost, StatusUrl)
 		}
 
 		if len(t.setpointWaitToPost) == 0 {
-			t.logger.Debug().Msg("no data to send")
+			t.logger.Debug().Msg("no setpoint data to send")
 			continue
 		} else {
-			t.logger.Debug().Msg("sending data")
+			t.logger.Debug().Msg("sending setpoint data")
 			t.Post(t.setpointWaitToPost, SetpointUrl)
 		}
 
 		if len(t.pvWaitToPost) == 0 {
-			t.logger.Debug().Msg("no data to send")
+			t.logger.Debug().Msg("no pv data to send")
 			continue
 		} else {
-			t.logger.Debug().Msg("sending data")
+			t.logger.Debug().Msg("sending pv data")
 			t.Post(t.pvWaitToPost, PvUrl)
 		}
 
