@@ -107,9 +107,9 @@ func (t *Triposter) Start() {
 
 func (t *Triposter) Post(objectToPost any, url string) {
 	data := struct {
-		Objects []*objects.Battery `json:"objects"`
+		Objects any `json:"objects"`
 	}{
-		Objects: objectToPost.([]*objects.Battery),
+		Objects: objectToPost,
 	}
 	// Encodage des données en JSON
 	objectJson, err := json.Marshal(data)
