@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
+	stdio "io"
 	"slices"
 
 	context "github.com/EcoPowerHub/context/pkg"
@@ -90,12 +92,19 @@ func (t *Triposter) Post(objectToPost any, url string) {
 	}
 	defer resp.Body.Close()
 
+	defer resp.Body.Close()
+
+	b, err := stdio.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	// Vérification de la réponse
 	if resp.StatusCode == http.StatusOK {
 		t.logger.Info().Msg("data sent successfully")
 		t.ResetLists()
 	} else {
-		t.logger.Error().Msg("data not sent")
+		t.logger.Error().Msgf("request failed with status code %d, body: %s", resp.StatusCode, b)
 	}
 }
 
