@@ -9,6 +9,6 @@ type object struct {
 	Type string `json:"type"`
 }
 type conf struct {
-	Host        string `json:"host"`
-	PostPeriodS int    `json:"post_period_s"`
+	Host   string `json:"host"`
+	Period string `json:"period"`
 }
