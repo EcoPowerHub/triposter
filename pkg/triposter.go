@@ -20,7 +20,7 @@ import (
 const (
 	BatteryUrl  = "/api/essMeasures"
 	MetricUrl   = "/api/metrics"
-	StatusUrl   = "/api/status"
+	StatusUrl   = "/api/statuses"
 	SetpointUrl = "/api/setpoints"
 	PvUrl       = "/api/pvMeasures"
 )
@@ -98,7 +98,7 @@ func (t *Triposter) Post(objectToPost any, url string) {
 	}
 
 	// Vérification de la réponse
-	if resp.StatusCode == http.StatusOK {
+	if resp.StatusCode == http.StatusCreated {
 		t.logger.Info().Msg("data sent successfully")
 		t.ResetLists()
 	} else {

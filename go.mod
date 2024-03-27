@@ -4,7 +4,7 @@ go 1.21.5
 
 require (
 	github.com/EcoPowerHub/context v0.1.5
-	github.com/EcoPowerHub/shared v0.1.6-0.20240327135839-d0e49f02a982
+	github.com/EcoPowerHub/shared v0.1.6-0.20240327141719-d5badf2fb429
 	github.com/rs/zerolog v1.32.0
 )
 
