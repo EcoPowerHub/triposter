@@ -35,7 +35,7 @@ type Triposter struct {
 	logger             *zerolog.Logger
 }
 
-func New(configuration Configuration, c *context.Context) Triposter {
+func New(configuration Configuration, c *context.Context, log zerolog.Logger) Triposter {
 	return Triposter{conf: configuration, context: c}
 }
 
