@@ -126,7 +126,7 @@ func (t *Triposter) Post(objectToPost any, url string) {
 	}
 	defer resp.Body.Close()
 
-	b, err := stdio.ReadAll(resp.Body)
+	_, err = stdio.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -136,7 +136,7 @@ func (t *Triposter) Post(objectToPost any, url string) {
 		t.logger.Info().Msg("data sent successfully")
 		t.ResetLists()
 	} else {
-		t.logger.Error().Msgf("request failed with status code %d, body: %s", resp.StatusCode, b)
+		t.logger.Error().Msgf("request failed with status code %d", resp.StatusCode)
 	}
 }
 
