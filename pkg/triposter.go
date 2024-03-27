@@ -111,6 +111,7 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.batteryWaitToPost, battery) {
 				continue
 			}
+			battery.Source = object.Source
 			t.batteryWaitToPost = append(t.batteryWaitToPost, battery)
 
 		case io.KeyMetric:
@@ -122,6 +123,7 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.metricWaitToPost, metric) {
 				continue
 			}
+			metric.Source = object.Source
 			t.metricWaitToPost = append(t.metricWaitToPost, metric)
 
 		case io.KeyStatus:
@@ -133,7 +135,9 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.statusWaitToPost, status) {
 				continue
 			}
+			status.Source = object.Source
 			t.statusWaitToPost = append(t.statusWaitToPost, status)
+
 		case io.KeySetpoint:
 			setPoint, err := t.context.Setpoint(object.Ref)
 			if err != nil {
@@ -143,7 +147,9 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.setpointWaitToPost, setPoint) {
 				continue
 			}
+			setPoint.Source = object.Source
 			t.setpointWaitToPost = append(t.setpointWaitToPost, setPoint)
+
 		case io.KeyPV:
 			pv, err := t.context.Pv(object.Ref)
 			if err != nil {
@@ -153,6 +159,8 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.pvWaitToPost, pv) {
 				continue
 			}
+			pv.Source = object.Source
+			t.pvWaitToPost = append(t.pvWaitToPost, pv)
 		}
 	}
 }
