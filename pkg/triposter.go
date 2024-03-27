@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
+	stdio "io"
 	"slices"
 
 	context "github.com/EcoPowerHub/context/pkg"
@@ -36,7 +38,7 @@ type Triposter struct {
 }
 
 func New(configuration Configuration, c *context.Context, log zerolog.Logger) Triposter {
-	return Triposter{conf: configuration, context: c}
+	return Triposter{conf: configuration, context: c, logger: &log}
 }
 
 func (t *Triposter) Configure() error {
@@ -90,12 +92,17 @@ func (t *Triposter) Post(objectToPost any, url string) {
 	}
 	defer resp.Body.Close()
 
+	b, err := stdio.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	// Vérification de la réponse
 	if resp.StatusCode == http.StatusOK {
 		t.logger.Info().Msg("data sent successfully")
 		t.ResetLists()
 	} else {
-		t.logger.Error().Msg("data not sent")
+		t.logger.Error().Msgf("request failed with status code %d, body: %s", resp.StatusCode, b)
 	}
 }
 
@@ -112,6 +119,7 @@ func (t *Triposter) Add() {
 				continue
 			}
 			battery.Source = object.Source
+			battery.Site = t.conf.Conf.Site
 			t.batteryWaitToPost = append(t.batteryWaitToPost, battery)
 
 		case io.KeyMetric:
@@ -124,6 +132,7 @@ func (t *Triposter) Add() {
 				continue
 			}
 			metric.Source = object.Source
+			metric.Site = t.conf.Conf.Site
 			t.metricWaitToPost = append(t.metricWaitToPost, metric)
 
 		case io.KeyStatus:
@@ -136,6 +145,7 @@ func (t *Triposter) Add() {
 				continue
 			}
 			status.Source = object.Source
+			status.Site = t.conf.Conf.Site
 			t.statusWaitToPost = append(t.statusWaitToPost, status)
 
 		case io.KeySetpoint:
@@ -148,6 +158,7 @@ func (t *Triposter) Add() {
 				continue
 			}
 			setPoint.Source = object.Source
+			setPoint.Site = t.conf.Conf.Site
 			t.setpointWaitToPost = append(t.setpointWaitToPost, setPoint)
 
 		case io.KeyPV:
@@ -160,6 +171,7 @@ func (t *Triposter) Add() {
 				continue
 			}
 			pv.Source = object.Source
+			pv.Site = t.conf.Conf.Site
 			t.pvWaitToPost = append(t.pvWaitToPost, pv)
 		}
 	}
