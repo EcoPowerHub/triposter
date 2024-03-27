@@ -1,7 +1,11 @@
 github.com/EcoPowerHub/context v0.1.1 h1:8CEV7Dh8KUvVTr9kB19nE0ew82YXONJ7JkeUTMd77XU=
 github.com/EcoPowerHub/context v0.1.1/go.mod h1:kWHAFBA22+BtGMSRUMBCe7QJsybLM+F0WOuYId6CKYQ=
+github.com/EcoPowerHub/context v0.1.5 h1:l65iD3BSTmDz2BM7ZEOe1eEoCQvIphPq+al0wlI79ro=
+github.com/EcoPowerHub/context v0.1.5/go.mod h1:lDctuHDqZgzrPJk7Xc/pnzizla5eiE4JUBdnnOmjAlA=
 github.com/EcoPowerHub/shared v0.1.0 h1:rtz0IUgOQL35kIuzfprXtZcUTbTpXHpv9H2niMK4Qqk=
 github.com/EcoPowerHub/shared v0.1.0/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
+github.com/EcoPowerHub/shared v0.1.5 h1:8FMv3AiFJ4YEZRO/y1csXqZDeN277Hj7pCFGYXb9bSA=
+github.com/EcoPowerHub/shared v0.1.5/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/goburrow/serial v0.1.0/go.mod h1:sAiqG0nRVswsm1C97xsttiYCzSLBmUZ/VSlVLZJ8haA=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
@@ -10,6 +14,8 @@ github.com/mattn/go-colorable v0.1.13/go.mod h1:7S9/ev0klgBDR4GtXTXX8a3vIGJpMovk
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
 github.com/mattn/go-isatty v0.0.19 h1:JITubQf0MOLdlGRuRq+jtsDlekdYPia9ZFsB8h/APPA=
 github.com/mattn/go-isatty v0.0.19/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
+github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
+github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/rs/xid v1.5.0/go.mod h1:trrq9SKmegXys3aeAKXMUTdJsYXVwGY3RLcfgqegfbg=
 github.com/rs/zerolog v1.32.0 h1:keLypqrlIjaFsbmJOBdB/qvyF8KEtCWHwobLp5l/mQ0=
@@ -18,3 +24,5 @@ golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.12.0 h1:CM0HF96J0hcLAwsHPJZjfdNzs0gftsLfgKt57wWHJ0o=
 golang.org/x/sys v0.12.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.18.0 h1:DBdB3niSjOA/O0blCZBqDefyWNYveAYMNF1Wum0DYQ4=
+golang.org/x/sys v0.18.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=

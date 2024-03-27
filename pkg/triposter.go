@@ -15,11 +15,20 @@ import (
 	"github.com/rs/zerolog"
 )
 
+const (
+	BatteryUrl  = "/api/essMeasures"
+	MetricUrl   = "/api/metrics"
+	StatusUrl   = "/api/status"
+	SetpointUrl = "/api/setpoints"
+	PvUrl       = "/api/pvMeasures"
+)
+
 type Triposter struct {
 	batteryWaitToPost  []*objects.Battery
 	metricWaitToPost   []*objects.Metric
 	statusWaitToPost   []*objects.Status
 	setpointWaitToPost []*objects.Setpoint
+	pvWaitToPost       []*objects.PV
 	conf               Configuration
 	context            *context.Context
 	period             time.Duration
@@ -48,42 +57,45 @@ func (t *Triposter) Configure() error {
 
 func (t *Triposter) Start() {
 	for {
-		// Création d'une structure pour contenir les trois listes
-		data := struct {
-			ListBattery  []*objects.Battery  `json:"listBattery"`
-			ListMetric   []*objects.Metric   `json:"listMetric"`
-			ListStatus   []*objects.Status   `json:"listStatus"`
-			ListSetpoint []*objects.Setpoint `json:"listSetpoint"`
-		}{
-			ListBattery:  t.batteryWaitToPost,
-			ListMetric:   t.metricWaitToPost,
-			ListStatus:   t.statusWaitToPost,
-			ListSetpoint: t.setpointWaitToPost,
-		}
-
-		// Encodage des données en JSON
-		jsonData, err := json.Marshal(data)
-		if err != nil {
-			fmt.Println("Erreur lors de l'encodage JSON:", err)
-			return
-		}
-
-		// Envoi de la requête POST avec les données JSON
-		resp, err := http.Post("URL", "application/json", bytes.NewBuffer(jsonData))
-		if err != nil {
-			fmt.Println("Erreur lors de l'envoi de la requête POST:", err)
-			return
-		}
-		defer resp.Body.Close()
-
-		// Vérification de la réponse
-		if resp.StatusCode == http.StatusOK {
-			fmt.Println("Données envoyées avec succès.")
-			t.ResetLists()
-		} else {
-			fmt.Println("La requête POST a échoué avec le code de statut:", resp.StatusCode)
-		}
+		t.Add()
+		t.Post(t.batteryWaitToPost, BatteryUrl)
+		t.Post(t.metricWaitToPost, MetricUrl)
+		t.Post(t.statusWaitToPost, StatusUrl)
+		t.Post(t.setpointWaitToPost, SetpointUrl)
+		t.Post(t.pvWaitToPost, PvUrl)
+		t.ResetLists()
 		time.Sleep(t.period)
+	}
+}
+
+func (t *Triposter) Post(objectToPost any, url string) {
+
+	data := struct {
+		Objects any `json:"objects"`
+	}{
+		Objects: objectToPost,
+	}
+	// Encodage des données en JSON
+	objectJson, err := json.Marshal(data)
+	if err != nil {
+		t.logger.Fatal().Err(err).Msg("error encoding JSON")
+		return
+	}
+
+	// Envoi de la requête POST avec les données JSON
+	resp, err := http.Post(t.conf.Conf.Host+url, "application/json", bytes.NewBuffer(objectJson))
+	if err != nil {
+		t.logger.Fatal().Err(err).Msg("error sending POST request")
+		return
+	}
+	defer resp.Body.Close()
+
+	// Vérification de la réponse
+	if resp.StatusCode == http.StatusOK {
+		t.logger.Info().Msg("data sent successfully")
+		t.ResetLists()
+	} else {
+		t.logger.Error().Msg("data not sent")
 	}
 }
 
@@ -132,6 +144,15 @@ func (t *Triposter) Add() {
 				continue
 			}
 			t.setpointWaitToPost = append(t.setpointWaitToPost, setPoint)
+		case io.KeyPV:
+			pv, err := t.context.Pv(object.Ref)
+			if err != nil {
+				t.logger.Fatal().Str("ref", object.Ref).Err(err).Msg("error getting pv")
+				continue
+			}
+			if slices.Contains(t.pvWaitToPost, pv) {
+				continue
+			}
 		}
 	}
 }
