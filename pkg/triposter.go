@@ -39,7 +39,6 @@ type Triposter struct {
 
 func New(configuration Configuration, c *context.Context, log zerolog.Logger) Triposter {
 	return Triposter{conf: configuration, context: c, logger: &log}
-	return Triposter{conf: configuration, context: c, logger: &log}
 }
 
 func (t *Triposter) Configure() error {
@@ -130,7 +129,7 @@ func (t *Triposter) Post(objectToPost any, url string) {
 	// Vérification de la réponse
 	if resp.StatusCode == http.StatusCreated {
 		t.logger.Info().Msg("data sent successfully")
-		t.ResetLists()
+		t.ResetList(objectToPost)
 	} else {
 		t.logger.Error().Msgf("request failed with status code %d", resp.StatusCode)
 	}
@@ -212,9 +211,14 @@ func (t *Triposter) Add() {
 	}
 }
 
+func (t *Triposter) ResetList(TypeOfObject any) {
+	TypeOfObject = make([]any, 0)
+}
+
 func (t *Triposter) ResetLists() {
 	t.batteryWaitToPost = []*objects.Battery{}
 	t.metricWaitToPost = []*objects.Metric{}
 	t.statusWaitToPost = []*objects.Status{}
 	t.setpointWaitToPost = []*objects.Setpoint{}
+	t.pvWaitToPost = []*objects.PV{}
 }
