@@ -39,7 +39,6 @@ type Triposter struct {
 
 func New(configuration Configuration, c *context.Context, log zerolog.Logger) Triposter {
 	return Triposter{conf: configuration, context: c, logger: &log}
-	return Triposter{conf: configuration, context: c, logger: &log}
 }
 
 func (t *Triposter) Configure() error {
@@ -151,6 +150,7 @@ func (t *Triposter) Add() {
 			battery.Source = object.Source
 			battery.Site = t.conf.Conf.Site
 			battery.Name = object.Name
+			battery.Timestamp = time.Now()
 			t.batteryWaitToPost = append(t.batteryWaitToPost, battery)
 
 		case io.KeyMetric:
@@ -165,6 +165,7 @@ func (t *Triposter) Add() {
 			metric.Source = object.Source
 			metric.Site = t.conf.Conf.Site
 			metric.Name = object.Name
+			metric.Timestamp = time.Now()
 			t.metricWaitToPost = append(t.metricWaitToPost, metric)
 
 		case io.KeyStatus:
@@ -179,6 +180,7 @@ func (t *Triposter) Add() {
 			status.Source = object.Source
 			status.Site = t.conf.Conf.Site
 			status.Name = object.Name
+			status.Timestamp = time.Now()
 			t.statusWaitToPost = append(t.statusWaitToPost, status)
 
 		case io.KeySetpoint:
@@ -193,6 +195,7 @@ func (t *Triposter) Add() {
 			setPoint.Source = object.Source
 			setPoint.Site = t.conf.Conf.Site
 			setPoint.Name = object.Name
+			setPoint.Timestamp = time.Now()
 			t.setpointWaitToPost = append(t.setpointWaitToPost, setPoint)
 
 		case io.KeyPV:
@@ -207,6 +210,7 @@ func (t *Triposter) Add() {
 			pv.Source = object.Source
 			pv.Site = t.conf.Conf.Site
 			pv.Name = object.Name
+			pv.Timestamp = time.Now()
 			t.pvWaitToPost = append(t.pvWaitToPost, pv)
 		}
 	}
