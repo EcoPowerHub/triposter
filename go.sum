@@ -1,9 +1,7 @@
-github.com/EcoPowerHub/context v0.1.5 h1:l65iD3BSTmDz2BM7ZEOe1eEoCQvIphPq+al0wlI79ro=
-github.com/EcoPowerHub/context v0.1.5/go.mod h1:lDctuHDqZgzrPJk7Xc/pnzizla5eiE4JUBdnnOmjAlA=
-github.com/EcoPowerHub/shared v0.1.6-0.20240327144424-04fcf0f1a2bc h1:lWsWrLZ0eDh85NV9KTpWozQW6qnpryvcne0rLuTO7xY=
-github.com/EcoPowerHub/shared v0.1.6-0.20240327144424-04fcf0f1a2bc/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
-github.com/EcoPowerHub/shared v0.1.6 h1:5TaSdVvCq6bLY2uhtM8I16dd3nLTRJb/5RG1Vz0V5BM=
-github.com/EcoPowerHub/shared v0.1.6/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
+github.com/EcoPowerHub/context v0.2.0 h1:9usVmfLTDn2osH5f+mi3zNrS1fe7p/XBxVPNlj7iN9Y=
+github.com/EcoPowerHub/context v0.2.0/go.mod h1:8JaB0Ij5rXynP/5+AecX54X3evhq10oJCVGOIjpTcmA=
+github.com/EcoPowerHub/shared v0.2.0 h1:srFRd7LlwJyNj4OWGTkqwCcfCKCIJkHYjJ68wch/fPQ=
+github.com/EcoPowerHub/shared v0.2.0/go.mod h1:FT6mGco4ZV6LcnvxWy4s/D/BokmM52Na70iK3nF1/wc=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
 github.com/mattn/go-colorable v0.1.13 h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxecdEvA=

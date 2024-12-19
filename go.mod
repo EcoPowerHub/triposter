@@ -3,8 +3,8 @@ module github.com/EcoPowerHub/triposter
 go 1.21.5
 
 require (
-	github.com/EcoPowerHub/context v0.1.5
-	github.com/EcoPowerHub/shared v0.1.6
+	github.com/EcoPowerHub/context v0.2.0
+	github.com/EcoPowerHub/shared v0.2.0
 	github.com/rs/zerolog v1.32.0
 )
 
