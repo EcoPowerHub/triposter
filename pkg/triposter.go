@@ -147,9 +147,6 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.batteryWaitToPost, battery) {
 				continue
 			}
-			battery.Source = object.Source
-			battery.Site = t.conf.Conf.Site
-			battery.Name = object.Name
 			battery.Timestamp = time.Now()
 			t.batteryWaitToPost = append(t.batteryWaitToPost, battery)
 
@@ -162,9 +159,6 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.metricWaitToPost, metric) {
 				continue
 			}
-			metric.Source = object.Source
-			metric.Site = t.conf.Conf.Site
-			metric.Name = object.Name
 			metric.Timestamp = time.Now()
 			t.metricWaitToPost = append(t.metricWaitToPost, metric)
 
@@ -177,9 +171,6 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.statusWaitToPost, status) {
 				continue
 			}
-			status.Source = object.Source
-			status.Site = t.conf.Conf.Site
-			status.Name = object.Name
 			status.Timestamp = time.Now()
 			t.statusWaitToPost = append(t.statusWaitToPost, status)
 
@@ -192,9 +183,6 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.setpointWaitToPost, setPoint) {
 				continue
 			}
-			setPoint.Source = object.Source
-			setPoint.Site = t.conf.Conf.Site
-			setPoint.Name = object.Name
 			setPoint.Timestamp = time.Now()
 			t.setpointWaitToPost = append(t.setpointWaitToPost, setPoint)
 
@@ -207,9 +195,6 @@ func (t *Triposter) Add() {
 			if slices.Contains(t.pvWaitToPost, pv) {
 				continue
 			}
-			pv.Source = object.Source
-			pv.Site = t.conf.Conf.Site
-			pv.Name = object.Name
 			pv.Timestamp = time.Now()
 			t.pvWaitToPost = append(t.pvWaitToPost, pv)
 		}
