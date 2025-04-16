@@ -17,8 +17,15 @@ type InfluxClient struct {
 	writeAPI                api.WriteAPIBlocking
 }
 
-func NewInfluxClient(url, token, org, bucket string) *InfluxClient {
-	return &InfluxClient{url: url, token: token, org: org, bucket: bucket}
+type Conf struct {
+	Org    string `json:"org"`
+	Bucket string `json:"bucket"`
+	Url    string `json:"url"`
+	Token  string `json:"token"`
+}
+
+func NewInfluxClient(c Conf) *InfluxClient {
+	return &InfluxClient{url: c.Url, token: c.Token, org: c.Org, bucket: c.Bucket}
 }
 
 func (c *InfluxClient) Connect(ctx context.Context) error {

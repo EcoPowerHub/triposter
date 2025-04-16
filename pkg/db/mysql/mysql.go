@@ -15,8 +15,12 @@ type MySQLClient struct {
 	db  *sql.DB
 }
 
-func NewMySQLClient(dsn string) *MySQLClient {
-	return &MySQLClient{dsn: dsn}
+type Conf struct {
+	DSN string `json:"dsn"`
+}
+
+func NewMySQLClient(c Conf) *MySQLClient {
+	return &MySQLClient{dsn: c.DSN}
 }
 
 func (c *MySQLClient) Connect(ctx context.Context) error {

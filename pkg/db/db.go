@@ -43,7 +43,3 @@ type DatabaseWriter interface {
 type PointWriter interface {
 	WritePoint(ctx context.Context, point any) error
 }
-
-// --- InfluxDB Implementation ---
-
-// --- Influx QueryBuilder ---
