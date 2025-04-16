@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -109,21 +108,21 @@ func (t *Triposter) Post(objectToPost any, url string) {
 	// Encodage des données en JSON
 	objectJson, err := json.Marshal(data)
 	if err != nil {
-		t.logger.Fatal().Err(err).Msg("error encoding JSON")
+		t.logger.Error().Err(err).Msg("error encoding JSON")
 		return
 	}
 
 	// Envoi de la requête POST avec les données JSON
 	resp, err := http.Post(t.conf.Conf.Host+url, "application/json", bytes.NewBuffer(objectJson))
 	if err != nil {
-		t.logger.Fatal().Err(err).Msg("error sending POST request")
+		t.logger.Error().Err(err).Msg("error sending POST request")
 		return
 	}
 	defer resp.Body.Close()
 
 	_, err = stdio.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		t.logger.Error().Err(err).Msg("error reading response body")
 	}
 
 	// Vérification de la réponse
@@ -141,7 +140,7 @@ func (t *Triposter) Add() {
 		case io.KeyBattery:
 			battery, err := t.context.Battery(object.Ref)
 			if err != nil {
-				t.logger.Fatal().Str("ref", object.Ref).Err(err).Msg("error getting battery")
+				t.logger.Error().Str("ref", object.Ref).Err(err).Msg("error getting battery")
 				continue
 			}
 			if slices.Contains(t.batteryWaitToPost, battery) {
@@ -153,7 +152,7 @@ func (t *Triposter) Add() {
 		case io.KeyMetric:
 			metric, err := t.context.Metric(object.Ref)
 			if err != nil {
-				t.logger.Fatal().Str("ref", object.Ref).Err(err).Msg("error getting metric")
+				t.logger.Error().Str("ref", object.Ref).Err(err).Msg("error getting metric")
 				continue
 			}
 			if slices.Contains(t.metricWaitToPost, metric) {
@@ -165,7 +164,7 @@ func (t *Triposter) Add() {
 		case io.KeyStatus:
 			status, err := t.context.Status(object.Ref)
 			if err != nil {
-				t.logger.Fatal().Str("ref", object.Ref).Err(err).Msg("error getting status")
+				t.logger.Error().Str("ref", object.Ref).Err(err).Msg("error getting status")
 				continue
 			}
 			if slices.Contains(t.statusWaitToPost, status) {
@@ -177,7 +176,7 @@ func (t *Triposter) Add() {
 		case io.KeySetpoint:
 			setPoint, err := t.context.Setpoint(object.Ref)
 			if err != nil {
-				t.logger.Fatal().Str("ref", object.Ref).Err(err).Msg("error getting setpoint")
+				t.logger.Error().Str("ref", object.Ref).Err(err).Msg("error getting setpoint")
 				continue
 			}
 			if slices.Contains(t.setpointWaitToPost, setPoint) {
@@ -189,7 +188,7 @@ func (t *Triposter) Add() {
 		case io.KeyPV:
 			pv, err := t.context.Pv(object.Ref)
 			if err != nil {
-				t.logger.Fatal().Str("ref", object.Ref).Err(err).Msg("error getting pv")
+				t.logger.Error().Str("ref", object.Ref).Err(err).Msg("error getting pv")
 				continue
 			}
 			if slices.Contains(t.pvWaitToPost, pv) {
