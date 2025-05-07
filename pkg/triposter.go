@@ -1,14 +1,12 @@
 package triposter
 
 import (
-	"bytes"
-	"encoding/json"
+	"encoding/csv"
 	"fmt"
-	"log"
-	"net/http"
+	"os"
+	"reflect"
 	"time"
 
-	stdio "io"
 	"slices"
 
 	context "github.com/EcoPowerHub/context/pkg"
@@ -101,37 +99,78 @@ func (t *Triposter) Start() {
 }
 
 func (t *Triposter) Post(objectToPost any, url string) {
-	data := struct {
-		Objects any `json:"objects"`
-	}{
-		Objects: objectToPost,
-	}
-	// Encodage des données en JSON
-	objectJson, err := json.Marshal(data)
-	if err != nil {
-		t.logger.Fatal().Err(err).Msg("error encoding JSON")
+	var fileName string
+	switch url {
+	case BatteryUrl:
+		fileName = "battery.csv"
+	case MetricUrl:
+		fileName = "metric.csv"
+	case StatusUrl:
+		fileName = "status.csv"
+	case SetpointUrl:
+		fileName = "setpoint.csv"
+	case PvUrl:
+		fileName = "pv.csv"
+	default:
+		t.logger.Error().Msgf("unknown url: %s", url)
 		return
 	}
 
-	// Envoi de la requête POST avec les données JSON
-	resp, err := http.Post(t.conf.Conf.Host+url, "application/json", bytes.NewBuffer(objectJson))
+	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		t.logger.Fatal().Err(err).Msg("error sending POST request")
+		t.logger.Fatal().Err(err).Msg("error opening CSV file")
 		return
 	}
-	defer resp.Body.Close()
+	defer file.Close()
 
-	_, err = stdio.ReadAll(resp.Body)
+	stat, err := file.Stat()
 	if err != nil {
-		log.Fatalln(err)
+		t.logger.Fatal().Err(err).Msg("error getting file info")
+		return
+	}
+	empty := stat.Size() == 0
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	val := reflect.ValueOf(objectToPost)
+	if val.Kind() != reflect.Slice || val.Len() == 0 {
+		t.logger.Warn().Msg("empty or invalid data for CSV export")
+		return
 	}
 
-	// Vérification de la réponse
-	if resp.StatusCode == http.StatusCreated {
-		t.logger.Info().Msg("data sent successfully")
-		t.ResetLists()
-	} else {
-		t.logger.Error().Msgf("request failed with status code %d", resp.StatusCode)
+	first := val.Index(0)
+	elemType := first.Type()
+	numFields := elemType.Elem().NumField()
+	headers := make([]string, 0, numFields)
+
+	for i := 0; i < numFields; i++ {
+		field := elemType.Elem().Field(i)
+		if field.PkgPath == "" { // exporté
+			headers = append(headers, field.Name)
+		}
+	}
+
+	if empty {
+		writer.Write(headers)
+	}
+
+	for i := 0; i < val.Len(); i++ {
+		rowVal := val.Index(i).Elem()
+		row := make([]string, 0, len(headers))
+		for j := 0; j < numFields; j++ {
+			field := elemType.Elem().Field(j)
+			if field.PkgPath != "" {
+				continue
+			}
+			value := rowVal.Field(j)
+			if value.Type().String() == "time.Time" {
+				row = append(row, value.Interface().(time.Time).Format(time.RFC3339))
+			} else {
+				row = append(row, fmt.Sprintf("%v", value.Interface()))
+			}
+		}
+		writer.Write(row)
 	}
 }
 
