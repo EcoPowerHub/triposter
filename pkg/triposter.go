@@ -152,6 +152,38 @@ func (t *Triposter) Post(objectToPost any, url string) {
 	}
 
 	if empty {
+		// Annotation for InfluxDB
+		annotations := [][]string{
+			headers,                      // header row (field names)
+			make([]string, len(headers)), // empty datatype annotation (to be defined if known)
+			make([]string, len(headers)), // empty group annotation
+			make([]string, len(headers)), // empty default annotation
+		}
+
+		// Add InfluxDB-specific annotations
+		for i := range headers {
+			switch headers[i] {
+			case "Timestamp":
+				annotations[1][i] = "dateTime:RFC3339"
+				annotations[2][i] = ""
+				annotations[3][i] = ""
+			default:
+				annotations[1][i] = "double"
+				annotations[2][i] = ""
+				annotations[3][i] = ""
+			}
+		}
+
+		// Write annotation rows according to InfluxDB Annotated CSV specification
+		datatypeRow := append([]string{"#datatype"}, annotations[1]...)
+		groupRow := append([]string{"#group"}, annotations[2]...)
+		defaultRow := append([]string{"#default"}, annotations[3]...)
+
+		writer.Write(datatypeRow)
+		writer.Write(groupRow)
+		writer.Write(defaultRow)
+
+		// Write header row
 		writer.Write(headers)
 	}
 
