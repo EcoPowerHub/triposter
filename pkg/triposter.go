@@ -1,7 +1,6 @@
 package triposter
 
 import (
-	"encoding/csv"
 	"fmt"
 	"os"
 	"reflect"
@@ -99,111 +98,163 @@ func (t *Triposter) Start() {
 }
 
 func (t *Triposter) Post(objectToPost any, url string) {
-	var fileName string
+	var measurement string
 	switch url {
 	case BatteryUrl:
-		fileName = "battery.csv"
+		measurement = "battery"
 	case MetricUrl:
-		fileName = "metric.csv"
+		measurement = "metric"
 	case StatusUrl:
-		fileName = "status.csv"
+		measurement = "status"
 	case SetpointUrl:
-		fileName = "setpoint.csv"
+		measurement = "setpoint"
 	case PvUrl:
-		fileName = "pv.csv"
+		measurement = "pv"
 	default:
 		t.logger.Error().Msgf("unknown url: %s", url)
 		return
 	}
 
+	val := reflect.ValueOf(objectToPost)
+	if val.Kind() != reflect.Slice || val.Len() == 0 {
+		t.logger.Warn().Msg("empty or invalid data for Line Protocol export")
+		return
+	}
+
+	fileName := measurement + ".lp"
 	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		t.logger.Fatal().Err(err).Msg("error opening CSV file")
+		t.logger.Fatal().Err(err).Msg("error opening Line Protocol file")
 		return
 	}
 	defer file.Close()
 
-	stat, err := file.Stat()
-	if err != nil {
-		t.logger.Fatal().Err(err).Msg("error getting file info")
-		return
-	}
-	empty := stat.Size() == 0
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-
-	val := reflect.ValueOf(objectToPost)
-	if val.Kind() != reflect.Slice || val.Len() == 0 {
-		t.logger.Warn().Msg("empty or invalid data for CSV export")
-		return
-	}
-
-	first := val.Index(0)
-	elemType := first.Type()
-	numFields := elemType.Elem().NumField()
-	headers := make([]string, 0, numFields)
-
-	for i := 0; i < numFields; i++ {
-		field := elemType.Elem().Field(i)
-		if field.PkgPath == "" { // exporté
-			headers = append(headers, field.Name)
-		}
-	}
-
-	if empty {
-		// Annotation for InfluxDB
-		annotations := [][]string{
-			headers,                      // header row (field names)
-			make([]string, len(headers)), // empty datatype annotation (to be defined if known)
-			make([]string, len(headers)), // empty group annotation
-			make([]string, len(headers)), // empty default annotation
-		}
-
-		// Add InfluxDB-specific annotations
-		for i := range headers {
-			switch headers[i] {
-			case "Timestamp":
-				annotations[1][i] = "dateTime:RFC3339"
-				annotations[2][i] = ""
-				annotations[3][i] = ""
-			default:
-				annotations[1][i] = "double"
-				annotations[2][i] = ""
-				annotations[3][i] = ""
-			}
-		}
-
-		// Write annotation rows according to InfluxDB Annotated CSV specification
-		datatypeRow := append([]string{"#datatype"}, annotations[1]...)
-		groupRow := append([]string{"#group"}, annotations[2]...)
-		defaultRow := append([]string{"#default"}, annotations[3]...)
-
-		writer.Write(datatypeRow)
-		writer.Write(groupRow)
-		writer.Write(defaultRow)
-
-		// Write header row
-		writer.Write(headers)
-	}
-
 	for i := 0; i < val.Len(); i++ {
-		rowVal := val.Index(i).Elem()
-		row := make([]string, 0, len(headers))
-		for j := 0; j < numFields; j++ {
-			field := elemType.Elem().Field(j)
-			if field.PkgPath != "" {
+		elem := val.Index(i).Elem()
+		elemType := elem.Type()
+
+		// Prepare tags and fields
+		tags := make(map[string]string)
+		fieldsNumeric := make(map[string]string)
+		fieldsString := make(map[string]string)
+		var timestamp time.Time
+
+		for j := 0; j < elem.NumField(); j++ {
+			field := elemType.Field(j)
+			if field.PkgPath != "" { // unexported
 				continue
 			}
-			value := rowVal.Field(j)
-			if value.Type().String() == "time.Time" {
-				row = append(row, value.Interface().(time.Time).Format(time.RFC3339))
-			} else {
-				row = append(row, fmt.Sprintf("%v", value.Interface()))
+			fieldName := field.Name
+			fieldValue := elem.Field(j).Interface()
+
+			switch fieldName {
+			case "Site":
+				tags["site"] = fmt.Sprintf("%v", fieldValue)
+			case "Source":
+				tags["source"] = fmt.Sprintf("%v", fieldValue)
+			case "Name":
+				tags["name"] = fmt.Sprintf("%v", fieldValue)
+			case "Timestamp":
+				if ts, ok := fieldValue.(time.Time); ok {
+					timestamp = ts
+				}
+			default:
+				// Determine field type to separate numeric and string fields
+				switch val := fieldValue.(type) {
+				case string:
+					// Escape double quotes and backslashes
+					escaped := stringReplaceAll(val, "\\", "\\\\")
+					escaped = stringReplaceAll(escaped, "\"", "\\\"")
+					fieldsString[fieldName] = fmt.Sprintf("\"%s\"", escaped)
+				case int, int8, int16, int32, int64:
+					fieldsNumeric[fieldName] = fmt.Sprintf("%di", val)
+				case uint, uint8, uint16, uint32, uint64:
+					fieldsNumeric[fieldName] = fmt.Sprintf("%di", val)
+				case float32, float64:
+					fieldsNumeric[fieldName] = fmt.Sprintf("%f", val)
+				case bool:
+					fieldsNumeric[fieldName] = fmt.Sprintf("%t", val)
+				case time.Time:
+					// Represent as UnixNano integer
+					fieldsNumeric[fieldName] = fmt.Sprintf("%di", val.UnixNano())
+				default:
+					fieldsString[fieldName] = fmt.Sprintf("\"%v\"", val)
+				}
 			}
 		}
-		writer.Write(row)
+
+		// Build tag set string
+		tagSet := ""
+		for k, v := range tags {
+			// Escape comma, space, and equals in tag values
+			escapedValue := v
+			escapedValue = stringReplaceAll(escapedValue, ",", "\\,")
+			escapedValue = stringReplaceAll(escapedValue, " ", "\\ ")
+			escapedValue = stringReplaceAll(escapedValue, "=", "\\=")
+			if tagSet == "" {
+				tagSet = fmt.Sprintf("%s=%s", k, escapedValue)
+			} else {
+				tagSet = fmt.Sprintf("%s,%s=%s", tagSet, k, escapedValue)
+			}
+		}
+
+		// Build field set string, numeric fields first, then string fields
+		fieldSet := ""
+		for k, v := range fieldsNumeric {
+			if fieldSet == "" {
+				fieldSet = fmt.Sprintf("%s=%s", k, v)
+			} else {
+				fieldSet = fmt.Sprintf("%s,%s=%s", fieldSet, k, v)
+			}
+		}
+		for k, v := range fieldsString {
+			if fieldSet == "" {
+				fieldSet = fmt.Sprintf("%s=%s", k, v)
+			} else {
+				fieldSet = fmt.Sprintf("%s,%s=%s", fieldSet, k, v)
+			}
+		}
+
+		// Use timestamp in nanoseconds, fallback to current time if zero
+		tsInt := timestamp.UnixNano()
+		if tsInt == 0 {
+			tsInt = time.Now().UnixNano()
+		}
+
+		line := fmt.Sprintf("%s", measurement)
+		if tagSet != "" {
+			line += "," + tagSet
+		}
+		if fieldSet != "" {
+			line += " " + fieldSet
+		} else {
+			// No fields, skip line
+			continue
+		}
+		line += fmt.Sprintf(" %d\n", tsInt)
+
+		if _, err := file.WriteString(line); err != nil {
+			t.logger.Error().Err(err).Msg("error writing to Line Protocol file")
+		}
 	}
+}
+
+func stringReplaceAll(s, old, new string) string {
+	// simple wrapper to avoid importing strings package
+	// since only used here
+	r := []rune{}
+	oldRunes := []rune(old)
+	newRunes := []rune(new)
+	for i := 0; i < len(s); {
+		if i+len(oldRunes) <= len(s) && s[i:i+len(oldRunes)] == old {
+			r = append(r, newRunes...)
+			i += len(oldRunes)
+		} else {
+			r = append(r, rune(s[i]))
+			i++
+		}
+	}
+	return string(r)
 }
 
 func (t *Triposter) Add() {
